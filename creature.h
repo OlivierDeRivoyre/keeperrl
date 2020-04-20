@@ -304,6 +304,8 @@ class Creature : public Renderable, public UniqueEntity<Creature>, public OwnedO
   bool canBeCaptured() const;
   void removePrivateEnemy(const Creature*); 
   void cheatAllSpells();
+	void setMateCreature(Creature* mate);
+	Creature* getMateCreature();
 
   vector<AutomatonPart> SERIAL(automatonParts);
   vector<PItem> SERIAL(drops);
@@ -364,6 +366,8 @@ class Creature : public Renderable, public UniqueEntity<Creature>, public OwnedO
   void increaseHitCount();
   optional<ViewId> SERIAL(primaryViewId);
   vector<Creature*> SERIAL(shamanSummons);
+	Creature* mateCreature = nullptr;
+
   void tickShamanSummons();
   bool considerSavingLife(DropType, const Creature* attacker);
 };

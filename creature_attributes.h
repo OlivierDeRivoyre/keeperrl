@@ -33,6 +33,7 @@
 #include "spell_school_id.h"
 #include "creature_inventory.h"
 
+
 inline bool isLarger(CreatureSize s1, CreatureSize s2) {
   return int(s1) > int(s2);
 }
@@ -72,6 +73,7 @@ class CreatureAttributes {
   string getDeathDescription() const;
   void setDeathDescription(string);
   const Gender& getGender() const;
+	void setGender(Gender g);
   double getExpLevel(ExperienceType type) const;
   const EnumMap<ExperienceType, double>& getExpLevel() const;
   const EnumMap<ExperienceType, int>& getMaxExpLevel() const;
@@ -118,6 +120,8 @@ class CreatureAttributes {
   int getAutomatonSlots() const;
   void randomize();
   bool isInstantPrisoner() const;
+	vector<LastingEffect> getGeneticTalents() const;  
+	void addGeneticTalent(LastingEffect effect);
 
   friend class ContentFactory;
   friend class CreatureFactory;
@@ -161,4 +165,5 @@ class CreatureAttributes {
   void initializeLastingEffects();
   CreatureInventory SERIAL(inventory);
   int SERIAL(automatonSlots) = 0;
+	vector<LastingEffect> SERIAL(geneticTalents);
 };

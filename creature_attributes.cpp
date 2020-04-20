@@ -70,7 +70,7 @@ void CreatureAttributes::serializeImpl(Archive& ar, const unsigned int version) 
   ar(OPTION(boulder), OPTION(noChase), OPTION(isSpecial), OPTION(skills), OPTION(spellSchools), OPTION(spells));
   ar(OPTION(permanentEffects), OPTION(lastingEffects), OPTION(minionActivities), OPTION(expLevel), OPTION(inventory));
   ar(OPTION(noAttackSound), OPTION(maxLevelIncrease), NAMED(creatureId), NAMED(petReaction), OPTION(combatExperience));
-  ar(OPTION(automatonParts));
+  ar(OPTION(automatonParts), OPTION(geneticTalents));
 }
 
 template <class Archive>
@@ -129,6 +129,10 @@ const Gender& CreatureAttributes::getGender() const {
   return gender;
 }
 
+void CreatureAttributes::setGender(Gender g) {
+  gender = g;
+}
+
 int CreatureAttributes::getRawAttr(AttrType type) const {
   int ret = attr[type];
   if (auto expType = getExperienceType(type)) {
@@ -183,6 +187,14 @@ void CreatureAttributes::increaseBaseExpLevel(ExperienceType type, double increa
 
 vector<SpellSchoolId> CreatureAttributes::getSpellSchools() const {
   return spellSchools;
+}
+
+vector<LastingEffect> CreatureAttributes::getGeneticTalents() const {
+  return geneticTalents;
+}
+
+void CreatureAttributes::addGeneticTalent(LastingEffect effect) {
+  geneticTalents.push_back(effect);
 }
 
 Body& CreatureAttributes::getBody() {

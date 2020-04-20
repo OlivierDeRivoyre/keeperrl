@@ -950,7 +950,7 @@ bool Body::isMinionFood() const {
 bool Body::canCopulateWith() const {
   switch (material) {
     case Material::FLESH:
-    case Material::UNDEAD_FLESH: return isHumanoid();
+    case Material::UNDEAD_FLESH: return true;
     default: return false;
   }
 }

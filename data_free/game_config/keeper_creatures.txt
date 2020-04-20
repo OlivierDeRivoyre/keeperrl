@@ -5,7 +5,7 @@
 {
   creatureId = { "KEEPER_MAGE" "KEEPER_MAGE_F" }
   tribeAlignment = EVIL
-  immigrantGroups = {"imps" "dark_keeper"}
+  immigrantGroups = {"imps" "dark_keeper" }
   technology = {
       "alchemy" "advanced alchemy" "alchemical conversion" "humanoid mutation" "beast mutation"
       "pig breeding" "iron working" "jewellery" "two-handed weapons" "traps" "archery" "sorcery"
@@ -18,6 +18,7 @@
   }
   workshopGroups = { "basic" "traps" }
   description = "Build and manage your dream dungeon, defend against raids, and attack your enemies!"
+  maxPopulation = 20
 # Special traits example, all traits are added
 #   specialTraits = { LastingEffect SPEED ExtraTraining MELEE 5 }
 }

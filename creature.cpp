@@ -1816,8 +1816,9 @@ CreatureAction Creature::destroy(Vec2 direction, const DestroyAction& action) co
 bool Creature::canCopulateWith(const Creature* c) const {
   PROFILE;
   return isAffected(LastingEffect::COPULATION_SKILL) &&
+			c->isAffected(LastingEffect::COPULATION_SKILL) &&
       c->getBody().canCopulateWith() &&
-      c->attributes->getGender() != attributes->getGender() &&
+    //  c->attributes->getGender() != attributes->getGender() &&
       c->isAffected(LastingEffect::SLEEP);
 }
 
@@ -2262,6 +2263,13 @@ const char* getMoraleText(double morale) {
 vector<AdjectiveInfo> Creature::getGoodAdjectives() const {
   PROFILE;
   vector<AdjectiveInfo> ret;
+	if(isAffected(LastingEffect::COPULATION_SKILL)){
+		if(attributes->getGender() == Gender::FEMALE){
+			ret.push_back({"Female","Can be pregnant"});
+		} else{
+			ret.push_back({"Male","Can not be pregnant"});
+		}
+	}
   if (auto time = getGlobalTime()) {
     for (LastingEffect effect : ENUM_ALL(LastingEffect))
       if (attributes->isAffected(effect, *time))
@@ -2275,6 +2283,9 @@ vector<AdjectiveInfo> Creature::getGoodAdjectives() const {
       if (attributes->isAffectedPermanently(effect))
         if (auto name = LastingEffects::getGoodAdjective(effect))
           ret.push_back({ *name, LastingEffects::getDescription(effect) });
+
+	
+
   if (getBody().isUndead())
     ret.push_back({"Undead",
         "Undead creatures don't take regular damage and need to be killed by chopping up or using fire."});
@@ -2342,4 +2353,12 @@ Creature* Creature::getClosestEnemy() const {
     }
   }
   return result;
+}
+
+void Creature::setMateCreature(Creature* mate){
+	mateCreature = mate;
+}
+
+Creature* Creature::getMateCreature(){
+	return mateCreature;
 }

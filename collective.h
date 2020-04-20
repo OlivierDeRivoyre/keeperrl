@@ -251,6 +251,8 @@ class Collective : public TaskCallback, public UniqueEntity<Collective>, public 
   virtual bool isConstructionReachable(Position) override;
 
   private:
+	void tryFecondate(Creature* who, Creature* with);
+
   void onMinionKilled(Creature* victim, Creature* killer);
   void onKilledSomeone(Creature* victim, Creature* killer);
 

@@ -328,6 +328,8 @@ void LastingEffects::onAffected(Creature* c, LastingEffect effect, bool msg) {
       case LastingEffect::TURNED_OFF:
         c->you(MsgType::ARE, "turned off");
         break;
+			case LastingEffect::FIRST_GENERATION:
+				break;
     }
 }
 
@@ -755,6 +757,7 @@ static Adjective getAdjective(LastingEffect effect) {
     case LastingEffect::UNSTABLE: return "Mentally unstable"_bad;
     case LastingEffect::OIL: return "Covered in oil"_bad;
     case LastingEffect::TURNED_OFF: return "Turned off"_bad;
+		case LastingEffect::FIRST_GENERATION: return "First generation"_bad;
   }
 }
 
@@ -1007,7 +1010,7 @@ bool LastingEffects::tick(Creature* c, LastingEffect effect) {
 string LastingEffects::getName(LastingEffect type) {
   switch (type) {
     case LastingEffect::PREGNANT: return "pregnant";
-    case LastingEffect::BLEEDING: return "bleeding";
+		case LastingEffect::BLEEDING: return "bleeding";
     case LastingEffect::SLOWED: return "slowness";
     case LastingEffect::SPEED: return "speed";
     case LastingEffect::BLIND: return "blindness";
@@ -1060,7 +1063,7 @@ string LastingEffects::getName(LastingEffect type) {
     case LastingEffect::SLOW_CRAFTING: return "slow crafting";
     case LastingEffect::SLOW_TRAINING: return "slow training";
     case LastingEffect::ENTERTAINER: return "entertainment";
-    case LastingEffect::BAD_BREATH: return "smelly breath";
+    case LastingEffect::BAD_BREATH: return "smelly breath";		
     case LastingEffect::AMBUSH_SKILL: return "ambush";
     case LastingEffect::SWIMMING_SKILL: return "swimming";
     case LastingEffect::DISARM_TRAPS_SKILL: return "trap disarming";
@@ -1087,13 +1090,14 @@ string LastingEffects::getName(LastingEffect type) {
     case LastingEffect::PSYCHIATRY: return "psychiatry";
     case LastingEffect::INVULNERABLE: return "invulnerability";
     case LastingEffect::TURNED_OFF: return "power off";
+		case LastingEffect::FIRST_GENERATION: return "first generation";
   }
 }
 
 string LastingEffects::getDescription(LastingEffect type) {
   switch (type) {
     case LastingEffect::PREGNANT: return "This is no dream! This is really happening!";
-    case LastingEffect::SLOWED: return "Causes unnaturally slow movement.";
+		case LastingEffect::SLOWED: return "Causes unnaturally slow movement.";
     case LastingEffect::BLEEDING: return "Causes loss of health points over time.";
     case LastingEffect::SPEED: return "Grants an extra move every turn.";
     case LastingEffect::BLIND: return "Causes blindness";
@@ -1174,6 +1178,7 @@ string LastingEffects::getDescription(LastingEffect type) {
     case LastingEffect::PSYCHIATRY: return "Creature won't be attacked by insane creatures.";
     case LastingEffect::INVULNERABLE: return "Creature can't be harmed in combat.";
     case LastingEffect::TURNED_OFF: return "Creature requires more automaton engines built.";
+		case LastingEffect::FIRST_GENERATION: return "Poor candidate for crossbreeding";
   }
 }
 

@@ -1351,6 +1351,9 @@ void PlayerControl::fillImmigration(CollectiveInfo& info) const {
       name += " (" + *s + ")";
     if (count > 1)
       infoLines.push_back("The entire group takes up one population spot");
+		if(count == 1 && c->getAttributes().isAffectedPermanently(LastingEffect::COPULATION_SKILL)){
+			infoLines.push_back(getName(c->getAttributes().getGender()));
+		}	
     for (auto trait : candidate.getInfo().getTraits())
       if (auto desc = getImmigrantDescription(trait))
         infoLines.push_back(desc);
@@ -1393,7 +1396,7 @@ void PlayerControl::fillImmigrationHelp(CollectiveInfo& info) const {
     Creature* c = getStats(creatureId);
     optional<pair<ViewId, int>> costObj;
     vector<string> requirements;
-    vector<string> infoLines;
+    vector<string> infoLines;		
     elem->visitRequirements(makeVisitor(
         [&](const AttractionInfo& attraction) {
           int required = attraction.amountClaimed;

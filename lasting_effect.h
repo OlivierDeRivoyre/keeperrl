@@ -85,7 +85,8 @@ RICH_ENUM(LastingEffect,
     SWARMER,
     PSYCHIATRY,
     INVULNERABLE,
-    TURNED_OFF
+    TURNED_OFF,
+		FIRST_GENERATION		
 );
 
 RICH_ENUM(CreatureCondition,

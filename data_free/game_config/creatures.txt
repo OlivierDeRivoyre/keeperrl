@@ -1985,6 +1985,9 @@
     body = {
       type = Humanoid LARGE
     }
+	permanentEffects = {
+      COPULATION_SKILL 1
+    }
     chatReactionFriendly = "curses all elves"
     chatReactionHostile = "\"Die!\""
     skills = {
@@ -2018,12 +2021,15 @@
     skills = {
       "LABORATORY" 0.7
     }
+	permanentEffects = {
+      COPULATION_SKILL 1
+    }
     chatReactionFriendly = "curses all elves"
     chatReactionHostile = "\"Die!\""
     maxLevelIncrease = {
       MELEE 4
       SPELL 7
-    }
+    }	
     spellSchools = { "mage" }
     name = {
       name = "orc mage"
@@ -2139,6 +2145,9 @@
       "LABORATORY" 0.5
       "DIGGING" 0.2
     }
+	permanentEffects = {
+      COPULATION_SKILL 1
+    }
     chatReactionFriendly = "talks about digging"
     chatReactionHostile = "\"Die!\""
     name = {
@@ -2182,6 +2191,7 @@
     chatReactionHostile = "\"Die!\""
     permanentEffects = {
       DISARM_TRAPS_SKILL 1
+	  COPULATION_SKILL 1
     }
     skills = {
       "LABORATORY" 0.3
@@ -2208,7 +2218,7 @@
     }
     body = {
       type = Humanoid SMALL
-      material = SPIRIT
+   #   material = SPIRIT
     }
     courage = -1
     noChase = true
@@ -2224,7 +2234,7 @@
     }
     name = {
       name = "imp"
-    }
+    }	    
   }
 "OGRE"
   {
@@ -2240,9 +2250,10 @@
     name = {
       name = "ogre"
       firstNameGen = "ORC"
-    }
+    }	
     permanentEffects = {
       MAGIC_VULNERABILITY 1
+	  COPULATION_SKILL 1
     }
     skills = {
       "WORKSHOP" 0.5

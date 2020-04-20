@@ -8,6 +8,7 @@
 #include "immigrant_auto_state.h"
 #include "game_time.h"
 #include "immigrant_info.h"
+#include "reproduction.h"
 
 class Collective;
 class SpecialTrait;
@@ -41,10 +42,11 @@ class Immigration : public OwnedObject<Immigration> {
 
     SERIALIZATION_DECL(Available)
 
-    private:
+    private:		
     static Available generate(WImmigration, const Group& group);
     static Available generate(WImmigration, int index);
-    vector<Position> getSpawnPositions() const;
+		static Available generateChild(WImmigration immigration, int immigrantIndex, Creature* mother);
+		 vector<Position> getSpawnPositions() const;
     Available(WImmigration, vector<PCreature>, int immigrantIndex, optional<GlobalTime> endTime, vector<SpecialTrait>);
     void addAllCreatures(const vector<Position>& spawnPositions);
     friend class Immigration;
@@ -72,6 +74,10 @@ class Immigration : public OwnedObject<Immigration> {
   int getAttractionValue(const AttractionType& attraction) const;
 
   private:
+	void generateInitialImmigrant(const char* creatureId, Gender gender);
+	void AddAvailable(PCreature creature);
+	void generateInitialImmigrant(CreatureId creatureId, Gender gender);
+   
   EntityMap<Creature, unordered_map<AttractionType, int, CustomHash<AttractionType>>> SERIAL(minionAttraction);
   map<int, Available> SERIAL(available);
   Collective* SERIAL(collective) = nullptr;
@@ -91,7 +97,9 @@ class Immigration : public OwnedObject<Immigration> {
   void initializePersistent();
   optional<GlobalTime> SERIAL(nextImmigrantTime);
   void resetImmigrantTime();
+	void createBabyCreature(Creature* mother);
   map<int, ImmigrantAutoState> SERIAL(autoState);
   int getNumGeneratedAndCandidates(int index) const;
   vector<ImmigrantInfo> SERIAL(immigrants);
+	Reproduction* SERIAL(reproduction);
 };

@@ -266,11 +266,13 @@ double Immigration::getImmigrantChance(const Group& group) const {
     return info.getFrequency() * getRequirementMultiplier(group);
 }
 
-Immigration::Immigration(Collective* c, vector<ImmigrantInfo> immigrants)
-  : collective(c), candidateTimeout(c->getConfig().getImmigrantTimeout()), immigrants(std::move(immigrants)) {
+Immigration::Immigration(Collective* c, vector<ImmigrantInfo> immigrantList)
+  : collective(c), candidateTimeout(c->getConfig().getImmigrantTimeout()), immigrants(std::move(immigrantList)) {
+		reproduction = new Reproduction(c, &immigrants);
 }
 
 Immigration::~Immigration() {
+	delete reproduction;
 }
 
 map<int, std::reference_wrapper<const Immigration::Available>> Immigration::getAvailable() const {
@@ -406,6 +408,7 @@ Immigration::Available::Available(WImmigration im, vector<PCreature> c, int ind,
 }
 
 void Immigration::Available::addAllCreatures(const vector<Position>& spawnPositions) {
+	std::cout << "addAllCreatures " << std::endl; 
   const ImmigrantInfo& info = immigration->immigrants[immigrantIndex];
   bool addedRecruits = false;
   vector<Creature*> immigrants;
@@ -521,7 +524,7 @@ Immigration::Available Immigration::Available::generate(WImmigration immigration
           specialTraits.push_back(trait);
         }
       }
-  }
+  }	
   return Available(
     immigration,
     std::move(immigrants),
@@ -577,6 +580,7 @@ void Immigration::update() {
     initialized = true;
     initializePersistent();
     resetImmigrantTime();
+		std::cout << "initialize immigration" << std::endl;
   }
   for (auto elem : Iter(available))
     if (elem->second.isUnavailable())
@@ -584,7 +588,29 @@ void Immigration::update() {
   for (auto elem : Iter(available))
     if (getValueMaybe(autoState, elem->second.immigrantIndex) == ImmigrantAutoState::AUTO_ACCEPT)
       accept(elem->first);
-  if (!nextImmigrantTime || *nextImmigrantTime < collective->getGlobalTime()) {
+
+	/* Check for birth */			
+  for (Creature* c : collective->getCreatures())
+	{
+		if (c->isAffected(LastingEffect::PREGNANT) && c->getTimeRemaining(LastingEffect::PREGNANT)->getVisibleInt() < 9)
+		{
+			c->removeEffect(LastingEffect::PREGNANT);			
+			createBabyCreature(c);      
+		}
+	}
+	if (!nextImmigrantTime || *nextImmigrantTime < collective->getGlobalTime()) {
+		std::cout << "update immigration" << std::endl;
+		for(auto elem : Iter(reproduction->getInitialCreatureIds())){
+			generateInitialImmigrant(*elem, Gender::FEMALE);
+			generateInitialImmigrant(*elem, Gender::MALE);		
+		}
+		resetImmigrantTime();
+		std::cout << "update immigration done" << std::endl;
+	}
+		
+	
+
+  /*if (!nextImmigrantTime || *nextImmigrantTime < collective->getGlobalTime()) {
     vector<Group> immigrantInfo;
     for (auto elem : Iter(immigrants))
       immigrantInfo.push_back(Group {elem.index(), Random.get(elem->getGroupSize())});
@@ -596,7 +622,136 @@ void Immigration::update() {
       available[idCnt].createdTime = Clock::getRealMillis();
       resetImmigrantTime();
     }
-  }
+  }*/
+}
+
+void Immigration::generateInitialImmigrant(CreatureId creatureId, Gender gender){	
+	for (auto& elem : available)
+	{
+		if(!elem.second.isUnavailable() && elem.second.creatures.size() == 1){			
+			if(elem.second.creatures.front()->getAttributes().getCreatureId() == creatureId 
+				&& elem.second.creatures.front()->getAttributes().getGender() == gender){
+				// There is already a candidate creature
+				return;
+			}
+		}
+	}
+	for (Creature* c : collective->getCreatures())
+	{
+		auto creature = c->getAttributes().getCreatureId();
+		if(creature.has_value() 
+			&& creature.value() == creatureId 
+			&& c->getAttributes().getGender() == gender)
+		{
+			// There is already at least one living creature				
+				return;
+		}
+	}				
+	std::cout << "generateFirstGeneration" << std::endl;
+	PCreature immigrant = reproduction->generateFirstGeneration(creatureId, gender);  
+	AddAvailable(std::move(immigrant));
+	std::cout << "generateFirstGeneration done" << std::endl;
+}
+
+void Immigration::createBabyCreature(Creature* mother) {
+
+		PCreature immigrant = reproduction->reproduce(mother, mother->getMateCreature());  
+		std::cout << "createBabyCreature.generateFirstGeneration ok" << std::endl;			
+	  collective->getControl()->addMessage(mother->getName().a() + " give birth to " + immigrant->getAttributes().getName().a());
+		std::cout << "createBabyCreature.addMessage ok" << std::endl;	
+		AddAvailable(std::move(immigrant));
+		std::cout << "createBabyCreature.AddAvailable ok" << std::endl;	
+	/*int immigrantIndex = -1;
+	vector<Group> immigrantInfo;	
+	const char* motherType = mother->getName().identify();
+	for (auto elem : Iter(immigrants))
+		if(elem->getNonRandomId(0) == motherType){
+			immigrantIndex = elem.index();
+			break;
+		}
+	if(immigrantIndex == -1){
+		for (auto elem : Iter(immigrants)){		  
+			immigrantInfo.push_back(Group {elem.index(), Random.get(elem->getGroupSize())});
+		}
+		vector<double> weights = immigrantInfo.transform([&](const Group& group) { return getImmigrantChance(group);});
+		if (std::accumulate(weights.begin(), weights.end(), 0.0) > 0) {			
+			const Group& group = Random.choose(immigrantInfo, weights);
+			immigrantIndex = group.immigrantIndex;			
+		}		
+	}
+	if(immigrantIndex != -1){
+		++idCnt;		
+		available.emplace(idCnt, Available::generateChild(this, immigrantIndex, mother));
+		available[idCnt].createdTime = Clock::getRealMillis();      
+		collective->getControl()->addMessage(mother->getName().a() + " give birth");
+	}*/
+}
+void Immigration::AddAvailable(PCreature creature) {
+	ImmigrantInfo* info;
+  int immigrantIndex = -1;
+	for(auto elem : Iter(immigrants)){
+		if(elem->getNonRandomId(0) == creature->getAttributes().getCreatureId()){
+			info = &*elem;
+			immigrantIndex = elem.index();
+			break;
+		}
+	}	 
+	if(immigrantIndex == -1){
+		return;
+	}
+	vector<SpecialTrait> specialTraits;
+	for(LastingEffect effect : creature->getAttributes().getGeneticTalents()){		
+		Lasting trait;
+		trait.effect = effect;		
+		specialTraits.push_back(trait);
+	}
+	vector<PCreature> immigrants;
+	immigrants.push_back(std::move(creature));
+	Immigration::Available candidate(
+		this, 
+		std::move(immigrants), 
+		immigrantIndex, 
+		!info->isPersistent()
+					? collective->getGame()->getGlobalTime() + candidateTimeout
+					: optional<GlobalTime>(none),
+			specialTraits
+  );
+	++idCnt;		
+	available.emplace(idCnt, std::move(candidate));
+	available[idCnt].createdTime = Clock::getRealMillis();      	
+}
+
+Immigration::Available Immigration::Available::generateChild(WImmigration immigration, int immigrantIndex, Creature* mother) {
+  const ImmigrantInfo& info = immigration->immigrants[immigrantIndex];
+  vector<PCreature> immigrants;
+  int numGenerated = immigration->generated[immigrantIndex].getSize();
+  vector<SpecialTrait> specialTraits;
+  auto contentFactory = immigration->collective->getGame()->getContentFactory();
+  
+	immigrants.push_back(contentFactory->getCreatures().fromId(
+					info.getId(numGenerated), 
+					immigration->collective->getTribeId(),
+					MonsterAIFactory::collective(immigration->collective)));
+
+	if (immigration->collective->getConfig().getStripSpawns() && info.stripEquipment)
+		immigrants.back()->getEquipment().removeAllItems(immigrants.back().get());
+	for (auto& specialTrait : info.getSpecialTraits())
+		if (Random.chance(specialTrait.prob)) {
+			for (auto& trait1 : specialTrait.traits) {
+				auto trait = transformBeforeApplying(trait1);
+				specialTraits.push_back(trait);
+			}
+		}
+  
+  return Available(
+    immigration,
+    std::move(immigrants),
+    immigrantIndex,
+    !info.isPersistent()
+        ? immigration->collective->getGame()->getGlobalTime() + immigration->candidateTimeout
+        : optional<GlobalTime>(none),
+    specialTraits
+  );
 }
 
 const vector<ImmigrantInfo>& Immigration::getImmigrants() const {

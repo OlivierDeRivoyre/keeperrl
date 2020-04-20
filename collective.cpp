@@ -1493,16 +1493,34 @@ void Collective::addRecordedEvent(string s) {
 
 void Collective::onCopulated(Creature* who, Creature* with) {
   PROFILE;
-  if (with->getName().bare() == "vampire")
-    control->addMessage(who->getName().a() + " makes love to " + with->getName().a()
-        + " with a monkey on " + his(who->getAttributes().getGender()) + " knee");
-  else
-    control->addMessage(who->getName().a() + " makes love to " + with->getName().a());
+  //if (with->getName().bare() == "vampire")
+  //  control->addMessage(who->getName().a() + " makes love to " + with->getName().a()
+  //      + " with a monkey on " + his(who->getAttributes().getGender()) + " knee");
+  //else
+   // control->addMessage(who->getName().a() + " makes love to " + with->getName().a());
   if (getCreatures().contains(with))
     with->addMorale(1);
-  if (!who->isAffected(LastingEffect::PREGNANT) && Random.roll(2)) {
-    who->addEffect(LastingEffect::PREGNANT, getConfig().getImmigrantTimeout());
-    control->addMessage(who->getName().a() + " becomes pregnant.");
+	
+	tryFecondate(who, with);
+	tryFecondate(with, who);	
+	//control->addMessage(who->getName().a() + " gender: " + string( ::getName(who->getAttributes().getGender())));
+}
+
+void Collective::tryFecondate(Creature* who, Creature* with) {
+	if (who->getAttributes().getGender() == Gender::FEMALE 
+			&& with->getAttributes().getGender() == Gender::MALE 
+			&& !who->isAffected(LastingEffect::PREGNANT) 
+			&& Random.chance(0.80)) {
+				if(who->getAttributes().getCreatureId() != with->getAttributes().getCreatureId()){
+					if(who->getAttributes().isAffectedPermanently(LastingEffect::FIRST_GENERATION) 
+					||with->getAttributes().isAffectedPermanently(LastingEffect::FIRST_GENERATION)){
+						std::cout << "FIRST_GENERATION can not crossbreed" << std::endl;
+						return;
+					}
+				}
+    who->addEffect(LastingEffect::PREGNANT, 100_visible);
+		who->setMateCreature(with);
+    control->addMessage(who->getName().a() + " becomes pregnant from " + with->getName().a());
   }
 }
 

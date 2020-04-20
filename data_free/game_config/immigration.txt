@@ -14,6 +14,19 @@
     }
 }
 
+"stater_monster"
+{
+   {
+      ids = { "GOBLIN" }
+      traits = { FIGHTER NO_AUTO_EQUIPMENT }      
+	  spawnLocation = NearLeader
+	  initialRecruitment = 1      
+      requirements = {
+       { 1 ExponentialCost "GOLD" 30 5 1 }
+      }
+    }
+}
+
 "peseant_prisoners"
 {
     {
@@ -41,12 +54,22 @@
 }
 
 "dark_keeper"
-{
+{   	
+    {
+      ids = { "BANDIT" }
+      traits = { FIGHTER NO_AUTO_EQUIPMENT }
+      frequency = 0.1      
+    }
+	{
+      ids = { "RAT_SOLDIER" }
+      traits = { FIGHTER NO_AUTO_EQUIPMENT }
+      frequency = 0.1      
+    }	
     {
       ids = { "GOBLIN" }
       traits = { FIGHTER NO_AUTO_EQUIPMENT }
       frequency = 0.7
-      requirements = {
+	  requirements = {
         { 0.1 AttractionInfo 1 {FurnitureType "FORGE" FurnitureType "WORKSHOP" FurnitureType "JEWELLER"}}
       }
       specialTraits = {
@@ -56,10 +79,16 @@
          { 0.01 { Lasting { ENTERTAINER } }}
       }
     }
-    {
+	{
+      ids = { "GNOME" }
+      traits = { FIGHTER NO_AUTO_EQUIPMENT }
+      frequency = 0.1      
+    }
+	{
       ids = { "ORC" }
       traits = { FIGHTER }
       frequency = 0.7
+	  initialRecruitment = 1
       requirements = {
         { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_WOOD"}}
       }
@@ -83,6 +112,14 @@
          { 0.02 { Lasting { HATE_HUMANS } }}
          { 0.03 { Lasting { BAD_BREATH } }}
          { 0.01 { Lasting { ENTERTAINER } }}
+      }
+    }
+    {
+      ids = { "CAVE_BEAR" }
+      traits = { FIGHTER  }
+      frequency = 0.1
+      requirements = {
+        { 0.0 FurnitureType "BEAST_CAGE" }
       }
     }
     {
@@ -140,7 +177,6 @@
       traits = { FIGHTER }
       frequency = 0.3
       requirements = {
-        { 0.0 MinTurnRequirement 2000 }
         { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_IRON"}}
       }
       specialTraits = {
@@ -161,7 +197,6 @@
       traits = { FIGHTER }
       frequency = 0.3
       requirements = {
-        { 0.0 MinTurnRequirement 2000 }
         { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_IRON"}}
         { 0.3 AttractionInfo 1 {ItemIndex RANGED_WEAPON}}
       }
@@ -219,7 +254,6 @@
       frequency = 0.2
       spawnLocation = FurnitureType "GRAVE"
       requirements = {
-        { 0.0 MinTurnRequirement 1000 }
         { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_IRON"}}
         { 0.0 CostInfo "CORPSE" 1}
       }
@@ -237,14 +271,18 @@
       frequency = 0.1
       spawnLocation = FurnitureType "GRAVE"
       requirements = {
-        { 0.0 MinTurnRequirement 1000 }
-        { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_IRON"}}
+       { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_IRON"}}
         { 0.0 CostInfo "CORPSE" 1}
       }
       specialTraits = {
          { 1.0 { Lasting { BAD_BREATH } }}
       }
-     }
+    }	
+	{
+      ids = { "LIZARDMAN" }
+      traits = { FIGHTER }
+      frequency = 0.2
+	}	
     {
       ids = { "LOST_SOUL" }
       traits = { FIGHTER }
@@ -254,17 +292,7 @@
         { 0.3 AttractionInfo 1 {FurnitureType "DEMON_SHRINE"}}
         { 0.0 CostInfo "DEMON_PIETY" 300 }
       }
-    }
-    {
-      ids = { "SUCCUBUS" }
-      traits = { FIGHTER NO_EQUIPMENT }
-      frequency = 0.3
-      spawnLocation = FurnitureType "DEMON_SHRINE"
-      requirements = {
-        { 0.3 AttractionInfo 2 {FurnitureType "DEMON_SHRINE"}}
-        { 0.0 CostInfo "DEMON_PIETY" 1000 }
-      }
-    }
+    }    
     {
       ids = { "ICE_DEMON" }
       traits = { FIGHTER NO_EQUIPMENT }
@@ -277,54 +305,7 @@
       specialTraits = {
          { 1.0 { Lasting { SUMMONED 500 } }}
       }
-    }
-    {
-      ids = { "DOPPLEGANGER" }
-      traits = { FIGHTER }
-      frequency = 0.3
-      spawnLocation = FurnitureType "DEMON_SHRINE"
-      requirements = {
-        { 0.3 AttractionInfo 3 {FurnitureType "DEMON_SHRINE"}}
-        { 0.0 CostInfo "DEMON_PIETY" 3000 }
-      }
-    }
-    {
-      ids = { "RAVEN" }
-      traits = { FIGHTER DOESNT_TRIGGER }
-      frequency = 0.5
-      requirements = {
-        { 0.0 SunlightState DAY }
-        { 0.0 FurnitureType "BEAST_CAGE" }
-      }
-    }
-    {
-      ids = { "BAT" }
-      traits = { FIGHTER DOESNT_TRIGGER }
-      frequency = 0.5
-      requirements = {
-        { 0.0 SunlightState NIGHT }
-        { 0.0 FurnitureType "BEAST_CAGE" }
-      }
-    }
-    {
-      ids = { "WOLF" }
-      traits = { FIGHTER DOESNT_TRIGGER }
-      frequency = 0.15
-      groupSize = {3 9}
-      autoTeam = true
-      requirements = {
-        { 0.0 SunlightState NIGHT }
-        { 0.0 FurnitureType "BEAST_CAGE" }
-      }
-    }
-    {
-      ids = { "CAVE_BEAR" }
-      traits = { FIGHTER DOESNT_TRIGGER }
-      frequency = 0.1
-      requirements = {
-        { 0.0 FurnitureType "BEAST_CAGE" }
-      }
-    }
+    }    
     {
       ids = { "WEREWOLF" }
       traits = { FIGHTER DOESNT_TRIGGER }
@@ -342,63 +323,30 @@
          { 0.1 { Lasting { ENTERTAINER } }}
       }
     }
-    {
-      ids = { "DARK_ELF_WARRIOR" }
+	{
+      ids = { "CYCLOPS" }
       traits = { FIGHTER }
-      requirements = {
-        { 0.0 RecruitmentInfo { "DARK_ELVES_ALLY" } 3 FIGHTER }
-        { 1.0 CostInfo "GOLD" 20 }
+      frequency = 0.2
+	  requirements = {
+        { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_ADA"}}       
       }
-    }
-    {
-      ids = { "ORC" }
+	}
+	{
+      ids = { "YETI" }
       traits = { FIGHTER }
-      requirements = {
-        { 0.0 RecruitmentInfo { "ORC_VILLAGE" } 3 FIGHTER }
-        { 1.0 CostInfo "GOLD" 5 }
+      frequency = 0.2
+	   requirements = {
+        { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_ADA"}}       
       }
-    }
-    {
-      ids = { "HARPY" }
+	}
+	{
+      ids = { "MINOTAUR" }
       traits = { FIGHTER }
-      requirements = {
-        { 0.0 RecruitmentInfo { "HARPY_CAVE" } 3 FIGHTER }
-        { 1.0 CostInfo "GOLD" 12 }
+      frequency = 0.2
+	   requirements = {
+        { 0.1 AttractionInfo 1 {FurnitureType "TRAINING_ADA"}}       
       }
-    }
-    {
-      ids = { "OGRE" }
-      traits = { FIGHTER }
-      requirements = {
-        { 0.0 RecruitmentInfo { "OGRE_CAVE" "ORC_VILLAGE" } 3 FIGHTER }
-        { 1.0 CostInfo "GOLD" 12 }
-      }
-    }
-    {
-      ids = { "SPECIAL_HMBN" "SPECIAL_HMBW" "SPECIAL_HMGN" "SPECIAL_HMGW" }
-      traits = { FIGHTER }
-      consumeIds = true
-      spawnLocation = Pregnancy
-      requirements = {
-        { 0.0 TechId "humanoid mutation" }
-        { 0.0 Pregnancy }
-        { 1.0 CostInfo "GOLD" 100 }
-      }
-      specialTraits = {
-         { 0.1 { Lasting { INSANITY }}}
-      }
-    }
-    {
-      ids = { "SPECIAL_BMBN" "SPECIAL_BMBW" "SPECIAL_BMGN" "SPECIAL_BMGW" }
-      traits = { FIGHTER DOESNT_TRIGGER }
-      consumeIds = true
-      spawnLocation = Pregnancy
-      requirements = {
-        { 0.0 TechId "beast mutation" }
-        { 0.0 Pregnancy }
-        { 1.0 CostInfo "GOLD" 100 }
-      }
-    }
+	}
 }
 
 "white_keeper"

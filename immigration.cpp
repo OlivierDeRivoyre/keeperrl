@@ -34,7 +34,7 @@
 template <class Archive>
 void Immigration::serialize(Archive& ar, const unsigned int) {
   ar & SUBCLASS(OwnedObject<Immigration>);
-  ar(available, minionAttraction, idCnt, collective, generated, candidateTimeout, initialized, nextImmigrantTime, autoState, immigrants);
+  ar(available, minionAttraction, idCnt, collective, generated, candidateTimeout, initialized, nextImmigrantTime, autoState, immigrants, reproduction);
 }
 SERIALIZABLE(Immigration);
 
@@ -267,12 +267,11 @@ double Immigration::getImmigrantChance(const Group& group) const {
 }
 
 Immigration::Immigration(Collective* c, vector<ImmigrantInfo> immigrantList)
-  : collective(c), candidateTimeout(c->getConfig().getImmigrantTimeout()), immigrants(std::move(immigrantList)) {
-		reproduction = new Reproduction(c, &immigrants);
+  : collective(c), candidateTimeout(c->getConfig().getImmigrantTimeout()), immigrants(std::move(immigrantList)),
+	reproduction(c, immigrants) {		
 }
 
-Immigration::~Immigration() {
-	delete reproduction;
+Immigration::~Immigration() {	
 }
 
 map<int, std::reference_wrapper<const Immigration::Available>> Immigration::getAvailable() const {
@@ -598,14 +597,12 @@ void Immigration::update() {
 			createBabyCreature(c);      
 		}
 	}
-	if (!nextImmigrantTime || *nextImmigrantTime < collective->getGlobalTime()) {
-		std::cout << "update immigration" << std::endl;
-		for(auto elem : Iter(reproduction->getInitialCreatureIds())){
+	if (!nextImmigrantTime || *nextImmigrantTime < collective->getGlobalTime()) {		
+		for(auto elem : Iter(reproduction.getInitialCreatureIds())){
 			generateInitialImmigrant(*elem, Gender::FEMALE);
 			generateInitialImmigrant(*elem, Gender::MALE);		
 		}
-		resetImmigrantTime();
-		std::cout << "update immigration done" << std::endl;
+		resetImmigrantTime();		
 	}
 		
 	
@@ -648,14 +645,14 @@ void Immigration::generateInitialImmigrant(CreatureId creatureId, Gender gender)
 		}
 	}				
 	std::cout << "generateFirstGeneration" << std::endl;
-	PCreature immigrant = reproduction->generateFirstGeneration(creatureId, gender);  
+	PCreature immigrant = reproduction.generateFirstGeneration(creatureId, gender);  
 	AddAvailable(std::move(immigrant));
 	std::cout << "generateFirstGeneration done" << std::endl;
 }
 
 void Immigration::createBabyCreature(Creature* mother) {
 
-		PCreature immigrant = reproduction->reproduce(mother, mother->getMateCreature());  
+		PCreature immigrant = reproduction.reproduce(mother, mother->getMateCreature());  
 		std::cout << "createBabyCreature.generateFirstGeneration ok" << std::endl;			
 	  collective->getControl()->addMessage(mother->getName().a() + " give birth to " + immigrant->getAttributes().getName().a());
 		std::cout << "createBabyCreature.addMessage ok" << std::endl;	

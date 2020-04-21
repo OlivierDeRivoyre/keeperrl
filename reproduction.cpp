@@ -32,11 +32,21 @@
 #include "storage_id.h"
 
 
-Reproduction::Reproduction(Collective* collective, const vector<ImmigrantInfo>* immigrants)
+template <class Archive>
+void Reproduction::serialize(Archive& ar, const unsigned int) {
+ // ar & SUBCLASS(OwnedObject<Immigration>);
+  ar(collective, immigrants, crossings, initialCreatures);
+}
+SERIALIZABLE(Reproduction);
+
+SERIALIZATION_CONSTRUCTOR_IMPL(Reproduction)
+
+
+Reproduction::Reproduction(Collective* collective, const vector<ImmigrantInfo> immigrants)
 	: collective(collective), immigrants(immigrants)
 {
 	vector<CreatureId> definedCreatures;
-	for (auto elem : Iter(*immigrants)){
+	for (auto elem : Iter(immigrants)){
 		if(elem->getTraits().contains(MinionTrait::WORKER)){
 			continue;
 		}
@@ -137,13 +147,20 @@ PCreature Reproduction::generateChild(const Creature* parent1, const Creature* p
 	CreatureId creatureId = parent1->getAttributes().getCreatureId().value();
 	Gender gender = Random.choose(parent1->getAttributes().getGender(), parent2->getAttributes().getGender());
 	std::cout<<"generateChild  " <<  creatureId << ", gender: " << gender << std::endl;	
+	if(collective == nullptr){
+		std::cout<<"Null collective" << std::endl;	
+	} else {
+		std::cout<<"Has collective" << std::endl;	
+	}
 	auto contentFactory = collective->getGame()->getContentFactory();
+	std::cout<<"Has contentFactory" << std::endl;	
 	PCreature creature = contentFactory->getCreatures().fromId(creatureId, collective->getTribeId(), MonsterAIFactory::collective(collective));
+	std::cout<<"generateChild-getCreatures fromId"<<std::endl;
 	creature->getEquipment().removeAllItems(creature.get());
 	creature->getAttributes().setGender(gender);
 	creature->getAttributes().addPermanentEffect(LastingEffect::COPULATION_SKILL, 1);
 	set<LastingEffect> uniqueTalent;
-
+	std::cout<<"generateChild-setGender"<<std::endl;
 	vector<const Creature*> bothParents;
 	bothParents.push_back(parent1);
 	bothParents.push_back(parent2);
@@ -155,6 +172,7 @@ PCreature Reproduction::generateChild(const Creature* parent1, const Creature* p
 			}
 		}
 	}
+	std::cout<<"generateChild-addGeneticTalent"<<std::endl;
   if(creature->getAttributes().getGeneticTalents().size() < 3){
 		LastingEffect talent = Random.choose(
 			LastingEffect::MAGIC_VULNERABILITY,
@@ -177,6 +195,7 @@ PCreature Reproduction::generateChild(const Creature* parent1, const Creature* p
 			LastingEffect::PLAGUE_RESISTANT,
 			LastingEffect::PLAGUE_RESISTANT
 		);
+		std::cout<<"generateChild-add new talent"<<std::endl;
 		if(uniqueTalent.find(talent) == uniqueTalent.end()){
 			creature->getAttributes().addGeneticTalent(talent);
 			uniqueTalent.insert(talent);

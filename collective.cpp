@@ -1509,8 +1509,7 @@ void Collective::onCopulated(Creature* who, Creature* with) {
 void Collective::tryFecondate(Creature* who, Creature* with) {
 	if (who->getAttributes().getGender() == Gender::FEMALE 
 			&& with->getAttributes().getGender() == Gender::MALE 
-			&& !who->isAffected(LastingEffect::PREGNANT) 
-			&& Random.chance(0.80)) {
+			&& !who->isAffected(LastingEffect::PREGNANT)) {
 				if(who->getAttributes().getCreatureId() != with->getAttributes().getCreatureId()){
 					if(who->getAttributes().isAffectedPermanently(LastingEffect::FIRST_GENERATION) 
 					||with->getAttributes().isAffectedPermanently(LastingEffect::FIRST_GENERATION)){

@@ -101,5 +101,5 @@ class Immigration : public OwnedObject<Immigration> {
   map<int, ImmigrantAutoState> SERIAL(autoState);
   int getNumGeneratedAndCandidates(int index) const;
   vector<ImmigrantInfo> SERIAL(immigrants);
-	Reproduction* SERIAL(reproduction);
+	Reproduction SERIAL(reproduction);
 };

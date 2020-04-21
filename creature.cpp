@@ -1815,11 +1815,18 @@ CreatureAction Creature::destroy(Vec2 direction, const DestroyAction& action) co
 
 bool Creature::canCopulateWith(const Creature* c) const {
   PROFILE;
+	if(isAffected(LastingEffect::FIRST_GENERATION) || c->isAffected(LastingEffect::FIRST_GENERATION)){
+		if(attributes->getCreatureId() != c->attributes->getCreatureId()){
+			return false;
+		}
+	}
   return isAffected(LastingEffect::COPULATION_SKILL) &&
 			c->isAffected(LastingEffect::COPULATION_SKILL) &&
       c->getBody().canCopulateWith() &&
-    //  c->attributes->getGender() != attributes->getGender() &&
-      c->isAffected(LastingEffect::SLEEP);
+      c->attributes->getGender() != attributes->getGender() &&
+      c->isAffected(LastingEffect::SLEEP) &&
+			!isAffected(LastingEffect::PREGNANT) &&
+			!c->isAffected(LastingEffect::PREGNANT);
 }
 
 bool Creature::canConsume(const Creature* c) const {

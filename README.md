@@ -1,44 +1,20 @@
-keeperrl
-========
 
-Source code of KeeperRL.
-
-http://keeperrl.com,
-
-http://store.steampowered.com/app/329970,
-
-https://miki151.itch.io/keeperrl
+Fork of https://github.com/miki151/keeperrl.git
 
 
-Compiling
-=========
+Instead of randomly appearing, creatures mate to reproduce.
 
-On Windows: go to here -> http://keeperrl.com/compiling-keeperrl-on-windows/
+Initially you will have very basic creature that you can cross to unlock more powerfull creature.
 
-On Linux and Mac:
-
-*Prerequisites*
-
-  * make essentials
-  * gcc-4.8.2 OR clang-3.5
-  * git
-  * For compiling on OSX you'll also need libboost-system, libboost-thread and libboost-chrono
-  * libsdl2-dev, libsdl2-image-dev
-  * libopenal-dev
-  * libvorbis-dev
-
-Under Ubuntu 14.4 , you could use these to create development enviroment 
-```
-sudo apt-get install libsdl2-dev libsdl2-image-dev libopenal-dev libvorbis-dev llvm-3.4 build-essential
-
-```
-
-
-In terminal:  
-  ```
-  git clone https://github.com/miki151/keeperrl.git
-  cd keeperrl
-  make -j 8 OPT=true RELEASE=true # Add DEBUG=true to have debug symbols
-  # add OSX=true to compile on OSX
-  ./keeper
-  ```
+Main rules are:
+ - Female can copulate with Male to be pregnant
+ - Once pregnancy end, the new creature will be available. Player can chose to adopt it or not. 
+ - Creature of same species produce new born of the same species. A Gnome mating with a Gnome will produce a Gnome.
+ - New born will inherits special traits from their parent. A parent Orc with "Magic Resistance" have a 50% chance to give this trait to its children.
+ - Some mutation may happen on new born. The new special trait may be a good one or a bad one.
+ - New species appears by crossing two differents species. When this occurs, the resulting new born is "First generation". For example, crossing a Gnome with a Bandit may result as an Orc.
+ - The crossing matrix is randomly generated at the begining of the game. Thus if Gnome and Bandit cross to an Orc once, this crossing will always produce Orc.
+ - New born by crossing two differents species are ""First generation" and do not inherits special traits from their parent.
+ - Creature of the "First generation" can only reproduce with creature of same species.
+ 
+ 
